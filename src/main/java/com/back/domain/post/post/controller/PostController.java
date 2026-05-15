@@ -2,30 +2,53 @@ package com.back.domain.post.post.controller;
 
 import com.back.domain.post.post.entity.Post;
 import com.back.domain.post.post.service.PostService;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequiredArgsConstructor
+@Validated
 public class PostController {
     private final PostService postService;
 
     private String getWriteFormHtml() {
-        return getWriteFormHtml("");    }
+        return getWriteFormHtml("","","","");    }
 
-    private String getWriteFormHtml(String errorMessage) {
+    private String getWriteFormHtml(
+            String errorFieldName,
+            String errorMessage,
+            String title,
+            String content
+    ) {
        return """
                 <div style="color: red;">%s</div>
                 <form method="POST" action="doWrite">
-                <input type="text" name="title" placeholder="제목" value="">
+                <input type="text" name="title" placeholder="제목" value="%s" autofocus>
                   <br>
-                  <textarea name="content" placeholder="내용"></textarea>
+                  <textarea name="content" placeholder="내용">%s</textarea>
                   <br>
                   <input type="submit" value="작성">
                 </form>
-                """.formatted(errorMessage);
+                
+                <script>
+                const errorFieldName = '%s';
+                
+                if(errorFieldName.length > 0)
+                {
+                //현재까지 나온 모든 폼 검색
+                const  forms = document.querySelectorAll('form')
+                //그 중에서 가장 마지막 폼 1개 찾기
+                const lastForm = forms[forms.length - 1];
+                
+                lastForm[errorFieldName].focus();
+                }
+                </script>
+                """.formatted(errorMessage,title,content,errorFieldName);
     }
 
     @GetMapping("/posts/write")
@@ -37,11 +60,20 @@ public class PostController {
     @ResponseBody
     @Transactional
     public String write (
-        @RequestParam(defaultValue = "") String title,
-        @RequestParam(defaultValue = "") String content
+        @NotBlank
+        @Size(min = 2, max = 20)
+        @RequestParam(defaultValue = "")
+        String title,
+       @NotBlank
+       @Size(min = 2, max = 20)
+       @RequestParam(defaultValue = "")
+       String content
     ){
-       if (title.isBlank()) return getWriteFormHtml("제목을 입력해주세요.");
-       if (content.isBlank()) return getWriteFormHtml("내용을 입력해주세요.");
+        //제거 가능
+//       if (title.length() < 2) return getWriteFormHtml("title","제목을 2자 이상 적어주세요.",title,content);
+//       if (title.length() > 20) return getWriteFormHtml("title","제목은 최대 20자까지 입력가능합니다.",title,content);
+//       if (content.length () < 2) return getWriteFormHtml("content","내용을 2자 이상 입력해주세요.",title,content);
+//       if (content.length () > 100) return getWriteFormHtml("content","내용을 100자 이내로 입력해주세요.",title,content);
 
 
        Post post =  postService.write(title, content);
