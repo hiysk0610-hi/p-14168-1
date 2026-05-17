@@ -22,7 +22,7 @@ public class PostController {
     private final PostService postService;
 
     @GetMapping("/posts/write")
-    public String showWrite() {
+    public String showWrite(@ModelAttribute("form") WriteForm form) {
         return "post/post/write";
     }
 
@@ -40,7 +40,8 @@ public class PostController {
     @PostMapping("/posts/doWrite")
     @Transactional
     public String write(
-            @Valid WriteForm form, //클래스를 통해서 받으려면 Valid 필수
+            @Valid WriteForm form,
+            @ModelAttribute("form") //클래스를 통해서 받으려면 Valid 필수
             BindingResult bindingResult,
             Model model
     ) {
