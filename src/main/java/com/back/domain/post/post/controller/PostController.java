@@ -53,17 +53,7 @@ public class PostController {
             Model model
     ) {
         if (bindingResult.hasErrors()) {
-            String errorMessage = bindingResult
-                    .getFieldErrors()
-                    .stream()
-                    .map(fieldError -> (fieldError.getField() + "-" + fieldError.getDefaultMessage()).split("-", 3))
-                    .map(field -> "<!--%s--><li data-error-field-name=\"%s\">%s</li>".formatted(field[1], field[0], field[2]))
-                    .sorted()
-                    .collect(Collectors.joining("\n"));
-
-            model.addAttribute("errorMessage", errorMessage);
-
-            return "post/post/write";
+           return "post/post/write";
         }
 
         Post post = postService.write(form.getTitle(), form.getContent());
