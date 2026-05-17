@@ -21,6 +21,12 @@ import java.util.stream.Collectors;
 public class PostController {
     private final PostService postService;
 
+    @ModelAttribute("siteName")
+    public String siteName(){
+        System.out.println("PostController.siteName() called");
+        return "커뮤니티 사이트 A";
+    }
+
     @GetMapping("/posts/write")
     public String showWrite(@ModelAttribute("form") WriteForm form) {
         return "post/post/write";
