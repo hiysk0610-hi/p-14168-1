@@ -15,6 +15,9 @@ import org.springframework.validation.FieldError;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Controller
 @RequiredArgsConstructor
 public class PostController {
@@ -80,10 +83,12 @@ public class PostController {
 
     ){
         if (bindingResult.hasErrors()) {
-            FieldError fieldError = bindingResult.getFieldError();
-
-            String errorFieldName= fieldError.getField();
-            String errorMessage = fieldError.getDefaultMessage();
+           String errorFieldName ="title";
+           String errorMessage = bindingResult
+                   .getFieldErrors()
+                   .stream()
+                   .map(FieldError::getDefaultMessage)
+                   .collect(Collectors.joining("<br>"));
 
             return getWriteFormHtml(errorFieldName, errorMessage, form.getTitle(), form.getContent());
         }
