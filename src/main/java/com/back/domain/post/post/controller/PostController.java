@@ -2,17 +2,20 @@ package com.back.domain.post.post.controller;
 
 import com.back.domain.post.post.entity.Post;
 import com.back.domain.post.post.service.PostService;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequiredArgsConstructor
-@Validated
 public class PostController {
     private final PostService postService;
 
@@ -56,27 +59,29 @@ public class PostController {
     public String write() {
         return getWriteFormHtml();
     }
+
+    @AllArgsConstructor
+    @Getter
+    public static class WriteForm{
+        @NotBlank
+        @Size(min = 2, max = 20)
+        private String title;
+        @NotBlank
+        @Size(min = 2, max = 20)
+        private String content;
+    }
     @PostMapping ("/posts/doWrite")
     @ResponseBody
     @Transactional
     public String write (
-        @NotBlank
-        @Size(min = 2, max = 20)
-        @RequestParam(defaultValue = "")
-        String title,
-       @NotBlank
-       @Size(min = 2, max = 20)
-       @RequestParam(defaultValue = "")
-       String content
+           @Valid WriteForm form, //클래스를 통해서 받으려면 Valid 필수
+            BindingResult bindingResult
     ){
-        //제거 가능
-//       if (title.length() < 2) return getWriteFormHtml("title","제목을 2자 이상 적어주세요.",title,content);
-//       if (title.length() > 20) return getWriteFormHtml("title","제목은 최대 20자까지 입력가능합니다.",title,content);
-//       if (content.length () < 2) return getWriteFormHtml("content","내용을 2자 이상 입력해주세요.",title,content);
-//       if (content.length () > 100) return getWriteFormHtml("content","내용을 100자 이내로 입력해주세요.",title,content);
+        if (bindingResult.hasErrors()) {
+            return getWriteFormHtml();
+        }
 
-
-       Post post =  postService.write(title, content);
+       Post post =  postService.write(form.getTitle(), form.getContent());
 
         return "%d번 글이 생성되었습니다.".formatted(post.getId());    }
 }
