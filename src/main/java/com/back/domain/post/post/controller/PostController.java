@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -63,11 +64,11 @@ public class PostController {
     @AllArgsConstructor
     @Getter
     public static class WriteForm{
-        @NotBlank
-        @Size(min = 2, max = 20)
+        @NotBlank(message = "제목을 입력해주세요.")
+        @Size(min = 2, max = 20, message = "제목은 2자 이상, 20자 이하로 입력가능합니다.")
         private String title;
-        @NotBlank
-        @Size(min = 2, max = 20)
+        @NotBlank(message = "내용을 입력해주세요.")
+        @Size(min = 2, max = 20, message = "내용은 2자 이상, 20자 이하로 입력가능합니다.")
         private String content;
     }
     @PostMapping ("/posts/doWrite")
@@ -76,9 +77,15 @@ public class PostController {
     public String write (
            @Valid WriteForm form, //클래스를 통해서 받으려면 Valid 필수
             BindingResult bindingResult
+
     ){
         if (bindingResult.hasErrors()) {
-            return getWriteFormHtml();
+            FieldError fieldError = bindingResult.getFieldError();
+
+            String errorFieldName= fieldError.getField();
+            String errorMessage = fieldError.getDefaultMessage();
+
+            return getWriteFormHtml(errorFieldName, errorMessage, form.getTitle(), form.getContent());
         }
 
        Post post =  postService.write(form.getTitle(), form.getContent());
