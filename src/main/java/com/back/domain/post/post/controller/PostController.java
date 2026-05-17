@@ -46,8 +46,9 @@ public class PostController {
     @PostMapping("/posts/doWrite")
     @Transactional
     public String write(
+            @ModelAttribute("form")
             @Valid WriteForm form,
-            @ModelAttribute("form") //클래스를 통해서 받으려면 Valid 필수
+            //클래스를 통해서 받으려면 Valid 필수
             BindingResult bindingResult,
             Model model
     ) {
