@@ -3,14 +3,14 @@
     <ul style="color: red;">
         <th:block th:utext="${errorMessage}"></th:block>
     </ul>
-    <form method="POST" action="doWrite">
+    <form method="POST" action="doWrite" th:object="${form}">
         <div>
              <label for="title">제목</label><br>
-            <input type="text" name="title" id="title" placeholder="제목" th:value="${form.title}" autofocus>    <br>
+            <input type="text"  placeholder="제목" autofocus th:field="*{title}" autofocus>    <br>
         </div>
         <div>
          <label for="content">내용</label><br>
-         <textarea name="content" placeholder="내용" id="content" th:text="${form.content}"></textarea>    <br>
+         <textarea name="content" placeholder="내용" id="content" autofocus th:field="*{content}"></textarea>    <br>
         </div>
             <input type="submit" value="작성">
     </form>
