@@ -1,8 +1,7 @@
 <h1 th:text="${siteName}"></h1>
 
 <form method="POST" th:object="${form}">
-    <div th:replace="~{form_errors :: formErrorsFragment}"></div>
-
+    <div th:replace="~{post/post/form_errors :: formErrorsFragment}"></div>
     <div>
         <label>글 ID</label><br>
         <span th:text="${post.id}"></span>
