@@ -1,28 +1,13 @@
 <h1 th:text="${siteName}"></h1>
 
-<form method="POST" action="doWrite" th:object="${form}">
-    <ul th:if="${#fields.hasAnyErrors()}" style="color: red;">
-        <li
-                th:each="err : ${#fields.allErrors().stream().sorted()}"
-                th:with="errStrs = ${err.split('-', 3)},
-                    errFieldName = ${errStrs[1]},
-                    errMsg = ${errStrs[2]}"
-                th:data-error-field-name="${errFieldName}"
-                th:text="${errMsg}"
-        ></li>
-    </ul>
-
-        <div>
+<form method="POST" th:object="${form}">
+    <div th:replace="~{post/post/form_errors :: formErrorsFragment}"></div>
+    <div>
         <label for="title">제목</label><br>
         <input type="text" placeholder="제목" th:field="*{title}" autofocus>
-        <br>
     </div>
-
     <div>
         <label for="content">내용</label><br>
         <textarea placeholder="내용" th:field="*{content}"></textarea>
-        <br>
     </div>
-
     <input type="submit" value="작성">
-</form>

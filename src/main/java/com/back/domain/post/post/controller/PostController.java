@@ -13,8 +13,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.stream.Collectors;
+import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -43,23 +45,44 @@ public class PostController {
         private String content;
     }
 
-    @PostMapping("/posts/doWrite")
+    @PostMapping("/posts/write")
     @Transactional
     public String write(
             @ModelAttribute("form")
             @Valid WriteForm form,
             //클래스를 통해서 받으려면 Valid 필수
-            BindingResult bindingResult,
-            Model model
+            BindingResult bindingResult
     ) {
-        if (bindingResult.hasErrors()) {
-           return "post/post/write";
-        }
+        if (bindingResult.hasErrors()) return "post/post/write";
 
         Post post = postService.write(form.getTitle(), form.getContent());
 
+        return "redirect:/posts/" + post.getId();
+    }
+
+
+    @GetMapping("/posts/{id}")
+    @Transactional(readOnly = true)
+    public String showDetail(
+            @PathVariable int id,
+            Model model
+    ) {
+        Post post = postService.findById(id).get();
+
         model.addAttribute("post", post);
 
-        return "post/post/writeDone";
+        return "post/post/detail";
     }
+    @GetMapping("/posts")
+    @Transactional(readOnly = true)
+    @ResponseBody
+    public List<Post> showList() {
+        return postService.findAll();
+    }
+
+    @GetMapping("/posts/")
+    public String redirectToList() {
+        return "redirect:/posts";
+    }
+
 }
