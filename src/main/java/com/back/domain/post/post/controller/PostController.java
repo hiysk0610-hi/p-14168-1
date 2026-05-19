@@ -135,5 +135,12 @@ public class PostController {
     public String redirectToList() {
         return "redirect:/posts";
     }
+    @GetMapping("/posts/{id}/delete")
+    @Transactional
+    public String delete(@PathVariable int id) {
 
+        postService.delete(id);
+
+        return "redirect:/posts";
+    }
 }
